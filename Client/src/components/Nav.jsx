@@ -30,16 +30,17 @@ function Nav() {
         </Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse>
+          
           <Navbar.Link as={Link} to="/" active>
             Home
           </Navbar.Link>
-          <Navbar.Link as={Link} to="/about">
+          <Navbar.Link as={Link} to="/createemployee">
            Create Employee 
           </Navbar.Link>
-          <Navbar.Link as={Link} to="/services">
+          <Navbar.Link as={Link} to="/employees">
           Employee List
           </Navbar.Link>
-          <Navbar.Link as={Link} to="/pricing">
+          <Navbar.Link className="text-2xl" to="">
           {loggedInUser}
           </Navbar.Link>
           <Navbar.Link as={Link} to="/login">

@@ -51,7 +51,7 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-slate-100">
+    <div className="flex justify-center items-center min-h-screen bg-slate-100 dark:text-white">
       <Card className="w-[30%]">
      <h1 className="text-4xl text-semibold">Login</h1>
 
@@ -97,7 +97,7 @@ function Login() {
 
           <div>
             <span>
-              Already have an account? <Link to="/login">Login</Link>
+              Do not have an account? <Link to="/signup">SignUp</Link>
             </span>
           </div>
         </form>

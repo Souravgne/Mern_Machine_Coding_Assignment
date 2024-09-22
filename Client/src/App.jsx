@@ -4,6 +4,10 @@ import Login from './components/Login'
 import SignUp from './components/SignUp'
 import Home from './components/Home'
 import RefreshHandler from './components/RefreshHandler'
+import CreateEmployee from './components/CreateEmployee'
+import GetEmployees from './components/GetEmployees'
+import UpdateEmployee from './components/UpdateEmployee'
+import EditEmployee from './components/EditEmployee'
 
 function App() {
   const [isAuthenticated , setIsAuthenticated] = useState(false);
@@ -19,6 +23,11 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/home' element={<PrivateRoute element={<Home />}/>} />
+        <Route path='/createemployee' element={<PrivateRoute element={<CreateEmployee />}/>} />
+        <Route path='/employees' element={<PrivateRoute element={<GetEmployees />}/>} />
+        <Route path='/employee/:id' element={<PrivateRoute element={<UpdateEmployee />}/>} />
+        <Route path="/editemployee/:id" element={<PrivateRoute element={<EditEmployee />}/> } />
+
       </Routes>
     </div>
   )

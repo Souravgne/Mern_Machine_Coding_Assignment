@@ -1,12 +1,10 @@
-
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const AuthRouter = require('./Routes/AuthRouter');
-const ProductRouter = require('./Routes/ProductRouter')
-
-
+const ProductRouter = require('./Routes/ProductRouter');
+const EmployeeRouter = require('./Routes/EmployeeRouter');
 require('dotenv').config();
 require('./Models/db'); // Ensure the database connection is properly handled
 const PORT = process.env.PORT || 8080;
@@ -23,6 +21,7 @@ app.get('/ping', (req, res) => {
 // Auth routes
 app.use('/auth', AuthRouter); // Routes for /auth endpoints
 app.use('/products', ProductRouter); 
+app.use('/create', EmployeeRouter); // Changed route prefix to /employee
 
 // Start the server
 app.listen(PORT, () => {

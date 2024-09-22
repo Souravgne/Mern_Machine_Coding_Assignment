@@ -45,7 +45,7 @@ function SignUp() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-slate-100">
+    <div className="flex justify-center items-center min-h-screen bg-slate-100 dark:text-white">
   
       <Card className="w-[30%]">
      <h1 className="text-4xl text-semibold">SignUp</h1>
