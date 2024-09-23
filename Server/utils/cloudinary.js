@@ -1,11 +1,11 @@
-import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs'; // Use ES6 import
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
 
 // Configuration
 cloudinary.config({ 
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-    api_key: process.env.CLOUDINARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET 
+    cloud_name: 'dqypz03vw', 
+    api_key: '756341349866486', 
+    api_secret: 'wQmUAf4KGh6shVdltmTqDE1COK0' // Click 'View API Keys' above to copy your API secret
 });
 
 // Upload an image
@@ -37,4 +37,4 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
 };
 
-export { uploadOnCloudinary };
+module.exports = { uploadOnCloudinary };

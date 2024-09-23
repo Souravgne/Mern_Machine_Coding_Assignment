@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // Define the employee schema
 const employeeSchema = new mongoose.Schema({
   f_Id: { type: String, unique: true }, // This will now be auto-generated
-  // f_Image: { type: String, required: false }, // Store image path or URL
+  f_Image: { type: String, required: false }, // Store image path or URL
   f_Name: { type: String, required: true },
   f_Email: { type: String, required: true, unique: true },
   f_Mobile: { type: String, required: true },

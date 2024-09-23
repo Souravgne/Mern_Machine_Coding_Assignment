@@ -145,10 +145,11 @@ const EmployeeList = () => {
         </thead>
         <tbody>
           {currentEmployees.map((employee) => (
+            console.log(employee.f_Image),
             <tr key={employee._id} style={{ borderBottom: '1px solid gray' }}>
               <td>{employee.f_Id}</td>
               <td>
-                <img src={employee.f_Image} alt={employee.f_Name} style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
+                <img src={employee.f_Image} alt={employee.f_Image} style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
               </td>
               <td>{employee.f_Name}</td>
               <td><a href={`mailto:${employee.f_Email}`} style={{ color: 'blue', textDecoration: 'underline' }}>{employee.f_Email}</a></td>

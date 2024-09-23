@@ -1,15 +1,46 @@
 const Employee = require('../models/Employee');
 
 // Controller to create a new employee
+// exports.createEmployee = async (req, res) => {
+//   try {
+//     console.log(req.file)
+//     const employee = new Employee(req.body);
+//     await employee.save();
+//     res.status(201).json({ message: 'Employee created successfully', employee , success: true });
+//   } catch (error) {
+//     res.status(400).json({ error: error.message , success: false });
+//   }
+// };
+
 exports.createEmployee = async (req, res) => {
+  console.log("gola chola sourav " , req.body)
+  console.log("gola chola sourav " , req.file)
   try {
-    const employee = new Employee(req.body);
+    // Check if the file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: 'File upload is required', success: false });
+    }
+
+    // Access the uploaded file details (such as the file path)
+    const filePath = req.file.path; // This is where the file is saved (e.g., /uploads/filename.jpg)
+
+    // Create a new employee with req.body and include the file path in the employee data
+    const employee = new Employee({
+      ...req.body // Add the uploaded file path to the f_Image field
+    });
+
+    // Save the employee to the database
     await employee.save();
-    res.status(201).json({ message: 'Employee created successfully', employee , success: true });
+
+    // Respond with success
+    res.status(201).json({ message: 'Employee created successfully', employee, success: true });
   } catch (error) {
-    res.status(400).json({ error: error.message , success: false });
+    // Handle errors
+    res.status(400).json({ error:"gola chola " , success: false });
   }
 };
+
+
 
 // Controller to get all employees
 exports.getAllEmployees = async (req, res) => {

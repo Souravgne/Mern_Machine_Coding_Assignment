@@ -4,7 +4,7 @@ const Joi = require('joi');
 const employeeSchema = Joi.object({
   // f_Id should not be provided during creation (POST), but allowed during updates (PUT)
   f_Id: Joi.string().optional(), // Auto-generated, so not required in request body
-  // f_Image: Joi.string().optional(),  // Optional field for image path or URL
+  f_Image: Joi.string().optional(),  // Optional field for image path or URL
   f_Name: Joi.string().required().messages({
     'string.empty': 'Name is required'
   }),

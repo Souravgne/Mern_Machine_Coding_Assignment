@@ -1,50 +1,79 @@
 "use client";
 
-import { Button, Label, TextInput, Radio, Checkbox } from "flowbite-react";
+import { Button, Label, TextInput, Radio, FileInput } from "flowbite-react";
 import { useForm } from "react-hook-form";
-import React from 'react';
+import React, { useState } from 'react';
 import Nav from './Nav';
 import { toast, ToastContainer } from "react-toastify";
 
 function CreateEmployee() {
-  const { register, handleSubmit,reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const [imagePreview, setImagePreview] = useState(null); // State to hold image preview
 
   const onSubmit = async (data) => {
-    // Create a new object without f_Image
-    const { f_Image, ...formData } = data; // Exclude f_Image
-  
+    console.log("Form Data:", data);
+    
     try {
       const url = "http://localhost:4000/create/createemployee";
+      
+      // Create a new FormData object
+      const formData = new FormData();
+
+      // Append the first file from the FileList
+      if (data.f_Image && data.f_Image.length > 0) {
+        formData.append("f_Image", data.f_Image[0]);
+      } else {
+        console.error("No file selected");
+        return;
+      }
+      
+      // Append other form data
+      formData.append("f_Name", data.f_Name);
+      formData.append("f_Email", data.f_Email);
+      formData.append("f_Mobile", data.f_Mobile);
+      formData.append("f_Designation", data.f_Designation);
+      formData.append("f_gender", data.f_gender);
+      formData.append("f_Course", data.f_Course);
+      
       const response = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(formData), // Only send the rest of the data
+        body: formData,
       });
-  
-      const result = await response.json();
-      console.log(result);
-      const { success, message, error } = result; 
-      if (success) {
-        setTimeout(() => {
-          reset();
-        }, 1000);
-        toast.success(message);
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Success:", result);
+        toast.success("Employee created successfully!");
+        reset(); // Reset form fields after successful submission
+        setImagePreview(null); // Reset image preview
       } else {
-        toast.error(error);
+        console.error("Error:", response.statusText);
       }
-    } catch (err) {
-      toast.error(err.message);
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
-  
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Create a URL for the selected file
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    } else {
+      setImagePreview(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <Nav />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-16">
+      {imagePreview && (
+            <div className="mt-4">
+              <img src={imagePreview} alt="Image Preview" className=" w-1/2 mx-auto h-auto border rounded" />
+            </div>
+          )}
         <div className="grid grid-cols-2 gap-4 w-1/2 items-center">
           <Label htmlFor="f_Name" value="Name" className="text-right" />
           <TextInput
@@ -110,47 +139,48 @@ function CreateEmployee() {
 
           {/* Course Radio Buttons */}
           <Label htmlFor="f_Course" value="Course" className="text-right" />
-<div className="flex flex-col gap-2">
-  <div className="flex items-center gap-2">
-    <Radio
-      id="mca"
-      value="MCA"
-      {...register("f_Course", { required: "Course selection is required" })}
-    />
-    <Label htmlFor="mca">MCA</Label>
-  </div>
-  <div className="flex items-center gap-2">
-    <Radio
-      id="bca"
-      value="BCA"
-      {...register("f_Course", { required: "Course selection is required" })}
-    />
-    <Label htmlFor="bca">BCA</Label>
-  </div>
-  <div className="flex items-center gap-2">
-    <Radio
-      id="bsc"
-      value="BSC"
-      {...register("f_Course", { required: "Course selection is required" })}
-    />
-    <Label htmlFor="bsc">BSC</Label>
-  </div>
-</div>
-{errors.f_Course && <span className="text-red-500">{errors.f_Course.message}</span>}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Radio
+                id="mca"
+                value="MCA"
+                {...register("f_Course", { required: "Course selection is required" })}
+              />
+              <Label htmlFor="mca">MCA</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio
+                id="bca"
+                value="BCA"
+                {...register("f_Course", { required: "Course selection is required" })}
+              />
+              <Label htmlFor="bca">BCA</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio
+                id="bsc"
+                value="BSC"
+                {...register("f_Course", { required: "Course selection is required" })}
+              />
+              <Label htmlFor="bsc">BSC</Label>
+            </div>
+          </div>
+          {errors.f_Course && <span className="text-red-500">{errors.f_Course.message}</span>}
 
-          {/* Image Upload */}
-          {/* <Label htmlFor="f_Image" value="Upload Image" className="text-right" />
-          <TextInput
+          <Label htmlFor="f_Image" value="Upload Image" className="text-right" />
+          <FileInput
             id="f_Image"
             type="file"
-            {...register("f_Image")}
-            color={errors.f_Image ? "failure" : ""}
-          /> */}
-          {/* {errors.f_Image && <span className="text-red-500">{errors.f_Image.message}</span>} */}
+            accept="image/*"
+            {...register("f_Image", { required: "Image is required", onChange: handleFileChange })}
+            className="p-2 border border-gray-300 rounded"
+          />
+          {errors.f_Image && <span className="text-red-500">{errors.f_Image.message}</span>}
+
+          {/* Image Preview */}
+         
+
         </div>
-
-       
-
         <Button type="submit" className="mt-4">
           Submit
         </Button>
