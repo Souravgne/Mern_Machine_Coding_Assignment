@@ -1,24 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import Nav from "./Nav";
+import { toast, ToastContainer } from "react-toastify";
 import { useForm } from "react-hook-form";
+import Nav from "./Nav";
 
 const EditEmployee = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   // Initialize react-hook-form
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      f_Name: '',
-      f_Email: '',
-      f_Mobile: '',
-      f_Designation: '',
-      f_gender: '',
-      f_Course: '',
-    }
+      f_Name: "",
+      f_Email: "",
+      f_Mobile: "",
+      f_Designation: "",
+      f_gender: "",
+      f_Course: "",
+    },
   });
+
+  const [imagePreview, setImagePreview] = useState(null); // State to hold image preview
 
   // Fetch employee details and set values in the form
   useEffect(() => {
@@ -28,7 +36,6 @@ const EditEmployee = () => {
         const data = await response.json();
 
         if (data.success) {
-          // Populate form fields with fetched employee data
           reset({
             f_Name: data.employee.f_Name,
             f_Email: data.employee.f_Email,
@@ -37,9 +44,10 @@ const EditEmployee = () => {
             f_gender: data.employee.f_gender,
             f_Course: data.employee.f_Course,
           });
+          setImagePreview(data.employee.f_Image);
         } else {
           toast.error(data.message);
-          navigate('/employees');
+          navigate("/employees");
         }
       } catch (error) {
         console.error("Error fetching employee:", error);
@@ -52,7 +60,6 @@ const EditEmployee = () => {
 
   // Handle form submission
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       const response = await fetch(`http://localhost:4000/create/employee/${id}`, {
         method: "PUT",
@@ -60,10 +67,13 @@ const EditEmployee = () => {
         body: JSON.stringify(data),
       });
       const result = await response.json();
-      
+
       if (result.success) {
         toast.success("Employee updated successfully!");
-        navigate('/employees');
+        setTimeout(() => {
+          navigate("/employees");
+        }, 1000);
+        
       } else {
         toast.error(result.message);
       }
@@ -73,119 +83,194 @@ const EditEmployee = () => {
     }
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   return (
-    <div>
-      <h1>Edit Employee</h1>
+    <div className="min-h-screen dark:text-white bg-gray-100 dark:bg-gray-900">
       <Nav />
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            {...register("f_Name", { required: "Name is required" })}
-            placeholder="Name"
-            className="border p-2 w-full"
-          />
-          {errors.f_Name && <p className="text-red-500">{errors.f_Name.message}</p>}
-        </div>
-
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            {...register("f_Email", { required: "Email is required" })}
-            placeholder="Email"
-            className="border p-2 w-full"
-          />
-          {errors.f_Email && <p className="text-red-500">{errors.f_Email.message}</p>}
-        </div>
-
-        <div>
-          <label>Mobile No:</label>
-          <input
-            type="text"
-            {...register("f_Mobile", { required: "Mobile No is required" })}
-            placeholder="Mobile No"
-            className="border p-2 w-full"
-          />
-          {errors.f_Mobile && <p className="text-red-500">{errors.f_Mobile.message}</p>}
-        </div>
-
-        <div>
-          <label>Designation:</label>
-          <select {...register("f_Designation", { required: "Designation is required" })} className="border p-2 w-full">
-            <option value="">Select Designation</option>
-            <option value="HR">HR</option>
-            <option value="Manager">Manager</option>
-            <option value="Sales">Sales</option>
-          </select>
-          {errors.f_Designation && <p className="text-red-500">{errors.f_Designation.message}</p>}
-        </div>
-
-        <div>
-          <label>Gender:</label>
-          <div className="space-x-4">
-            <label>
+      <div className="w-2/3 flex justify-center items-center bg-gray-50 dark:bg-gray-700 border-gray-600 border rounded-md mx-auto mt-10">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-4 p-16 items-center"
+        >
+          <div className="flex gap-8 w-full">
+            {/* Image Upload and Preview */}
+            <div className="flex flex-col items-center">
+              <label htmlFor="f_Image" className="mb-2">
+                Upload Image
+              </label>
+              <div className="w-48 h-48 border border-gray-300 rounded-md overflow-hidden flex items-center justify-center bg-white">
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Image Preview"
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <span className="text-gray-400">No image uploaded</span>
+                )}
+              </div>
               <input
-                type="radio"
-                value="Male"
-                {...register("f_gender", { required: "Gender is required" })}
+                id="f_Image"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="mt-2 rounded-md"
               />
-              Male
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="Female"
-                {...register("f_gender", { required: "Gender is required" })}
-              />
-              Female
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="Other"
-                {...register("f_gender", { required: "Gender is required" })}
-              />
-              Other
-            </label>
+              {errors.f_Image && <span className="text-red-500">{errors.f_Image.message}</span>}
+            </div>
+
+            {/* Form Fields */}
+            <div className="flex flex-col gap-4 w-full">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Name Field */}
+                <div>
+                  <label htmlFor="f_Name">Name</label>
+                  <input
+                    id="f_Name"
+                    type="text"
+
+                    {...register("f_Name", { required: "Name is required" })}
+                    className="border  rounded-md p-2 w-full"
+                    placeholder="John Doe"
+                   
+                  />
+                  {errors.f_Name && (
+                    <span className="text-red-500">{errors.f_Name.message}</span>
+                  )}
+                </div>
+
+                {/* Email Field */}
+                <div>
+                  <label htmlFor="f_Email">Email</label>
+                  <input
+                    id="f_Email"
+                    type="email"
+                    {...register("f_Email", { required: "Email is required" })}
+                    className="border p-2 rounded-md  w-full"
+                    placeholder="name@example.com"
+                  />
+                  {errors.f_Email && (
+                    <span className="text-red-500">{errors.f_Email.message}</span>
+                  )}
+                </div>
+
+                {/* Mobile Number */}
+                <div>
+                  <label htmlFor="f_Mobile">Mobile No</label>
+                  <input
+                    id="f_Mobile"
+                    type="tel"
+                    {...register("f_Mobile", {
+                      required: "Mobile number is required",
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Mobile number must be 10 digits",
+                      },
+                    })}
+                    className="border p-2 rounded-md  w-full"
+                    placeholder="1234567890"
+                  />
+                  {errors.f_Mobile && (
+                    <span className="text-red-500">{errors.f_Mobile.message}</span>
+                  )}
+                </div>
+
+                {/* Designation Field */}
+                <div>
+                  <label htmlFor="f_Designation">Designation</label>
+                  <select
+                    id="f_Designation"
+                    {...register("f_Designation", { required: "Designation is required" })}
+                    className="border rounded-md  p-2 w-full"
+                  >
+                    <option value="">Select Designation</option>
+                    <option value="HR">HR</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Sales">Sales</option>
+                  </select>
+                  {errors.f_Designation && (
+                    <span className="text-red-500">{errors.f_Designation.message}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Gender Radio Buttons */}
+              <div>
+                <label htmlFor="f_gender">Gender</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="Male"
+                      {...register("f_gender", { required: "Gender is required" })}
+                    />
+                    <span className="ml-2">Male</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="Female"
+                      {...register("f_gender", { required: "Gender is required" })}
+                    />
+                    <span className="ml-2">Female</span>
+                  </label>
+                </div>
+                {errors.f_gender && (
+                  <span className="text-red-500">{errors.f_gender.message}</span>
+                )}
+              </div>
+
+              {/* Course Selection */}
+              <div>
+                <label htmlFor="f_Course">Course</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="BSc"
+                      {...register("f_Course", { required: "Course is required" })}
+                    />
+                    <span className="ml-2">BSc</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="BCA"
+                      {...register("f_Course", { required: "Course is required" })}
+                    />
+                    <span className="ml-2">BCA</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      value="MSc"
+                      {...register("f_Course", { required: "Course is required" })}
+                    />
+                    <span className="ml-2">MSc</span>
+                  </label>
+                </div>
+                {errors.f_Course && (
+                  <span className="text-red-500">{errors.f_Course.message}</span>
+                )}
+              </div>
+            </div>
           </div>
-          {errors.f_gender && <p className="text-red-500">{errors.f_gender.message}</p>}
-        </div>
 
-        <div>
-          <label>Course:</label>
-          <div className="space-x-4">
-            <label>
-              <input
-                type="radio"
-                value="BSc"
-                {...register("f_Course", { required: "Course is required" })}
-              />
-              BSc
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="BCA"
-                {...register("f_Course", { required: "Course is required" })}
-              />
-              BCA
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="MSc"
-                {...register("f_Course", { required: "Course is required" })}
-              />
-              MSc
-            </label>
-          </div>
-          {errors.f_Course && <p className="text-red-500">{errors.f_Course.message}</p>}
-        </div>
-
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">Update Employee</button>
-      </form>
+          <button type="submit" className="mt-6 w-1/4 bg-blue-500 text-white p-2 rounded">
+            Submit
+          </button>
+        </form>
+      </div>
+      <ToastContainer/>
     </div>
   );
 };

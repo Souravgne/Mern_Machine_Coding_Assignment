@@ -41,12 +41,13 @@ function Login() {
       }
       else if(error){
         const details = error?.details[0].message; 
+        console.log(details)
         toast.error(details);
         
       }
     } catch (err) {
       // Show error toast
-      toast.error("Error creating account. Please try again.");
+      toast.success("Error creating account. Please try again.");
     }
   };
 
